@@ -15,39 +15,50 @@ public class TicTacToe {
     public static void main(String[] args) {
         TicTacToe game = new TicTacToe();
 
-        Scanner reader = new Scanner(System.in);  // Reading from System.in
+        // Create a reader to read player moves
+        Scanner reader = new Scanner(System.in);
+
+        // Play the game
         while (true) {
+            // Get the player move
             System.out.println("Enter a box location: ");
             int i = reader.nextInt();
 
+            // Make the player move
             if (game.player_move(i)) {
                 break;
             }
 
+            // Make the agent move
             if (game.make_move()) {
                 break;
             }
-
         }
 
         reader.close();
     }
 
+    /**
+     * Create a new game of Tic Tac Toe to player against a rational agent with 1 turn of foresight.
+     *
+     */
     public TicTacToe() {
+        // Create the board
         board = new int[9];
+
+        // Display an init message
+        System.out.println("Welcome to Tic Tac Toe.");
+        System.out.println("To make a move enter the number corresponding to the board location:");
+        System.out.println("0 1 2");
+        System.out.println("3 4 5");
+        System.out.println("6 7 8");
     }
-
-
-    public void input_move(int x, int y) {
-        board[x * y + x] = 1;
-    }
-
 
     /**
-     * Return true if a player has won, else false.
+     * Checks if the game is over and which player won.
      *
-     * @param board
-     * @return
+     * @param board The board the game is being played on.
+     * @Return true if a player has won, else false.
      */
     public static boolean check_for_win(int[] board) {
         int[][] toCheck = new int[8][3];
@@ -102,6 +113,12 @@ public class TicTacToe {
         return false;
     }
 
+    /**
+     * Computes the next move for the agent to make. This agent only looks forward to the next move made by the
+     * player and no further.
+     *
+     * @return True on game over, False otherwise.*
+     */
     public boolean make_move() {
         // Search the space using the following reward function
         // Win = 100
@@ -120,7 +137,7 @@ public class TicTacToe {
             int[] tempBoard = board.clone();
             tempBoard[i] = 1;
 
-            System.out.println(Arrays.toString(tempBoard));
+//            System.out.println(Arrays.toString(tempBoard));
 
             costs.putIfAbsent(i, 0);
 
@@ -139,8 +156,8 @@ public class TicTacToe {
                 int[] innerTemp = tempBoard.clone();
                 innerTemp[j] = 2;
 
-                System.out.println("second move:");
-                System.out.println(Arrays.toString(innerTemp));
+//                System.out.println("second move:");
+//                System.out.println(Arrays.toString(innerTemp));
 
                 // Check for opponents win
                 if (check_for_win(innerTemp)) {
@@ -161,9 +178,20 @@ public class TicTacToe {
         }
 
         // make the highest reward move
-        System.out.println("Move at: " + maxKey + " with reward: " + maxValue);
+        System.out.println("Agent move at: " + maxKey + " with reward: " + maxValue);
         board[maxKey] = 1;
 
+        // Display the board
+        display_board();
+
+        return check_for_win(board);
+    }
+
+    /**
+     * Displays the current board state.
+     *
+     */
+    public void display_board() {
         // Display the board
         for (int i = 0; i < 9; i++) {
             System.out.print(board[i]);
@@ -174,14 +202,16 @@ public class TicTacToe {
             }
         }
         System.out.print("\r\n");
-
-        return check_for_win(board);
     }
 
+    /**
+     * Prompots the player to make a move and checks for a win.
+     *
+     * @param i The location the players wishes to move at.
+     * @return True on game over, False otherwise.
+     */
     public boolean player_move(int i) {
         board[i] = 2;
-
-        System.out.println(board);
 
         return check_for_win(board);
     }
